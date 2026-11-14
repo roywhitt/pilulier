@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pilulier</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+<style>
+:root{--mut:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;background:#1f1f1f;font-family:"Press Start 2P",ui-monospace,Menlo,monospace}
+body{display:flex;flex-direction:column;align-items:center;padding:14px 8px 18px}
+.pack{width:min(270px,94vw);box-sizing:border-box;padding:18px 14px 16px;border:3px solid #0a0a0a;border-radius:14px;background-color:#dcd9e4;background-image:linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%),linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%);background-size:6px 6px;background-position:0 0,3px 3px;box-shadow:0 6px 0 #000,0 12px 14px rgba(0,0,0,.55)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 10px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px}
+.slot{width:100%;height:48px;border:3px solid #9b97ab;background:#c6c3d1;border-radius:16px;box-shadow:inset 0 3px 0 #a8a4b8,0 3px 0 #f2f0f7;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;position:relative}
+.slot:hover{transform:translateY(-1px)}
+.slot:active{transform:translateY(2px)}
+.slot svg{width:62px;height:31px;display:block}
+.slot.pop svg{animation:pop .45s steps(6)}
+.slot.pop::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;background:#ffd23f;box-shadow:-34px -14px 0 #ff5b2e,34px -14px 0 #ffd23f,-38px 10px 0 #ffd23f,38px 10px 0 #ff5b2e,0 -24px 0 #5b3fd6,0 24px 0 #5b3fd6;animation:burst .45s steps(4) forwards;pointer-events:none}
+@keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.4) rotate(-8deg)}60%{transform:scale(.88) rotate(4deg)}100%{transform:scale(1)}}
+@keyframes burst{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+.lbl{font-size:8px;color:#4a4560;padding:3px 4px;line-height:1}
+.cell.today .lbl{background:#2b2833;color:#fff}
+.score{height:48px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4a4560}
+.score.full{color:#e8441a}
+.nav{display:flex;align-items:center;gap:12px;margin-top:20px;font-size:8px;color:var(--mut)}
+.nav button{background:none;border:none;color:var(--mut);font:inherit;font-size:12px;cursor:pointer;padding:4px 6px}
+.nav button:hover{color:#ff5b2e}
+@media (prefers-reduced-motion:reduce){.slot.pop svg,.slot.pop::after{animation:none}}
+</style>
+</head>
+<body>
+<div class="pack"><div class="grid" id="g"></div></div>
+<div class="nav"><button id="prev" aria-label="Semaine précédente">&lt;</button><span id="range"></span><button id="next" aria-label="Semaine suivante">&gt;</button></div>
+<script>
+var DAYS=["LUN","MAR","MER","JEU","VEN","SAM","DIM"];
+var MAP=["..oooooooooo..",".oaaaaabbbbbo.","oahhaaabbiibbo","oaaaaaabbbbbbo","oaaaaaabbbbbbo",".oaaaaabbbbbo.","..oooooooooo.."];
+var ON={o:"#24202e",a:"#17151c",b:"#ff5b2e",h:"#4d4a5a",i:"#ffa07a"};
+var OFF={o:"#8e8a9c",a:"#ebe9f0",b:"#d6d3df",h:"#ffffff",i:"#ffffff"};
+var SWAP={a:"b",b:"a",h:"i",i:"h",o:"o"};
+function pill(on,flip){
+ var p=on?ON:OFF,s='<svg viewBox="0 0 14 7" shape-rendering="crispEdges" aria-hidden="true">',y,x,c;
+ for(y=0;y<7;y++)for(x=0;x<14;x++){c=MAP[y][x];if(c==="."||c===undefined)continue;if(flip)c=SWAP[c];s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+p[c]+'"/>'}
+ return s+"</svg>";
+}
+var mem={};
+function sget(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):mem[k]||null}catch(e){return mem[k]||null}}
+function sset(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function monday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+var start=monday(new Date()),popped=-1;
+function wk(){return "pilulier:w:"+key(start)}
+function toggle(i){var c=sget(wk())||{},k="0-"+i;if(c[k]){delete c[k];popped=-1}else{c[k]=1;popped=i}sset(wk(),c);render();popped=-1}
+function render(){
+ var c=sget(wk())||{},today=key(new Date()),h="",n=0,i;
+ for(i=0;i<7;i++){
+  var d=new Date(start);d.setDate(d.getDate()+i);
+  var on=!!c["0-"+i];if(on)n++;
+  h+='<div class="cell'+(key(d)===today?" today":"")+'"><button class="slot'+(i===popped?" pop":"")+'" data-i="'+i+'" aria-pressed="'+on+'" aria-label="'+DAYS[i]+" "+d.getDate()+'">'+pill(on,i%3===1)+'</button><span class="lbl">'+DAYS[i]+"</span></div>";
+ }
+ h+='<div class="score'+(n===7?" full":"")+'">'+n+"/7</div>";
+ document.getElementById("g").innerHTML=h;
+ var end=new Date(start);end.setDate(end.getDate()+6);
+ document.getElementById("range").textContent=start.getDate()+"-"+end.getDate()+" "+end.toLocaleDateString("fr-FR",{month:"short"}).replace(".","").toUpperCase();
+}
+document.getElementById("g").addEventListener("click",function(e){var b=e.target.closest(".slot");if(b)toggle(+b.dataset.i)});
+document.getElementById("prev").onclick=function(){start.setDate(start.getDate()-7);render()};
+document.getElementById("next").onclick=function(){start.setDate(start.getDate()+7);render()};
+render();
+</script>
+</body>
+</html>
