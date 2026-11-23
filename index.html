@@ -7,69 +7,137 @@
 <title>Pilulier</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
 <style>
-:root{color-scheme:dark;--mut:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html,body{margin:0;background:transparent;font-family:"Press Start 2P",ui-monospace,Menlo,monospace}
-body{display:flex;flex-direction:column;align-items:center;padding:14px 8px 18px}
-.pack{width:min(270px,94vw);box-sizing:border-box;padding:18px 14px 16px;border:3px solid #0a0a0a;border-radius:14px;background-color:#dcd9e4;background-image:linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%),linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%);background-size:6px 6px;background-position:0 0,3px 3px;box-shadow:0 6px 0 #000,0 12px 14px rgba(0,0,0,.55)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 10px}
-.cell{display:flex;flex-direction:column;align-items:center;gap:6px}
-.slot{width:100%;height:48px;border:3px solid #9b97ab;background:#c6c3d1;border-radius:16px;box-shadow:inset 0 3px 0 #a8a4b8,0 3px 0 #f2f0f7;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;position:relative}
-.slot:hover{transform:translateY(-1px)}
-.slot:active{transform:translateY(2px)}
-.slot svg{width:62px;height:31px;display:block}
+:root{color-scheme:dark;--u:1px}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:"Press Start 2P",ui-monospace,Menlo,monospace;overscroll-behavior:none}
+/* la plaquette occupe tout le bloc Notion, sans rien autour */
+.pack{position:absolute;left:0;right:0;top:0;bottom:calc(var(--u)*6);display:flex;flex-direction:column;
+  padding:calc(var(--u)*10) calc(var(--u)*13) calc(var(--u)*12);border:calc(var(--u)*3) solid #0a0a0a;border-radius:calc(var(--u)*14);
+  background-color:#dcd9e4;background-image:linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%),linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%);
+  background-size:calc(var(--u)*6) calc(var(--u)*6);background-position:0 0,calc(var(--u)*3) calc(var(--u)*3);box-shadow:0 calc(var(--u)*6) 0 #000}
+/* bandeau discret imprimé sur la plaquette : semaine + flèches */
+.bar{display:flex;align-items:center;justify-content:space-between;font-size:calc(var(--u)*6.5);color:#8e8a9c;margin-bottom:calc(var(--u)*9);letter-spacing:.04em;line-height:1}
+.bar button{background:none;border:0;padding:calc(var(--u)*3) calc(var(--u)*4);font:inherit;color:#a8a4b8;cursor:pointer;transition:color .2s}
+.bar button:hover{color:#ff5b2e}
+.bar .mid{display:flex;align-items:center;gap:calc(var(--u)*6)}
+.sync{width:calc(var(--u)*4);height:calc(var(--u)*4);background:#a8a4b8;opacity:.6}
+.sync.wait{background:#ffd23f;animation:bl .6s steps(2) infinite;opacity:1}
+.sync.off{background:#e8441a;opacity:1}
+.sync.ok{background:#5bb37a;opacity:.8}
+@keyframes bl{50%{opacity:.2}}
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);gap:calc(var(--u)*10) calc(var(--u)*10)}
+.cell{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*5);min-height:0}
+.slot{width:100%;flex:1;min-height:0;border:calc(var(--u)*3) solid #9b97ab;background:#c6c3d1;border-radius:calc(var(--u)*16);
+  box-shadow:inset 0 calc(var(--u)*3) 0 #a8a4b8,0 calc(var(--u)*3) 0 #f2f0f7;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;position:relative;transition:transform .1s}
+.slot:hover{transform:translateY(calc(var(--u)*-1))}
+.slot:active{transform:translateY(calc(var(--u)*2))}
+.slot svg{width:calc(var(--u)*62);height:calc(var(--u)*31);max-height:80%;display:block}
 .slot.pop svg{animation:pop .45s steps(6)}
-.slot.pop::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;background:#ffd23f;box-shadow:-34px -14px 0 #ff5b2e,34px -14px 0 #ffd23f,-38px 10px 0 #ffd23f,38px 10px 0 #ff5b2e,0 -24px 0 #5b3fd6,0 24px 0 #5b3fd6;animation:burst .45s steps(4) forwards;pointer-events:none}
+.slot.pop::after{content:"";position:absolute;left:50%;top:50%;width:calc(var(--u)*4);height:calc(var(--u)*4);background:#ffd23f;
+  box-shadow:calc(var(--u)*-34) calc(var(--u)*-14) 0 #ff5b2e,calc(var(--u)*34) calc(var(--u)*-14) 0 #ffd23f,calc(var(--u)*-38) calc(var(--u)*10) 0 #ffd23f,calc(var(--u)*38) calc(var(--u)*10) 0 #ff5b2e,0 calc(var(--u)*-24) 0 #5b3fd6,0 calc(var(--u)*24) 0 #5b3fd6;
+  animation:burst .45s steps(4) forwards;pointer-events:none}
 @keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.4) rotate(-8deg)}60%{transform:scale(.88) rotate(4deg)}100%{transform:scale(1)}}
 @keyframes burst{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
-.lbl{font-size:8px;color:#4a4560;padding:3px 4px;line-height:1}
+.lbl{font-size:calc(var(--u)*7);color:#4a4560;padding:calc(var(--u)*3) calc(var(--u)*4);line-height:1}
 .cell.today .lbl{background:#2b2833;color:#fff}
-.score{height:48px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4a4560}
+.score{flex:1;display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*13);color:#4a4560}
 .score.full{color:#e8441a}
-.nav{display:flex;align-items:center;gap:12px;margin-top:20px;font-size:8px;color:var(--mut)}
-.nav button{background:none;border:none;color:var(--mut);font:inherit;font-size:12px;cursor:pointer;padding:4px 6px}
-.nav button:hover{color:#ff5b2e}
 @media (prefers-reduced-motion:reduce){.slot.pop svg,.slot.pop::after{animation:none}}
 </style>
 </head>
 <body>
-<script>try{if(window.self===window.top)document.documentElement.style.background="#191919"}catch(e){}</script>
-<div class="pack"><div class="grid" id="g"></div></div>
-<div class="nav"><button id="prev" aria-label="Semaine précédente">&lt;</button><span id="range"></span><button id="next" aria-label="Semaine suivante">&gt;</button></div>
+<div class="pack">
+  <div class="bar">
+    <button id="prev" aria-label="Semaine précédente">&lt;</button>
+    <span class="mid"><span id="range"></span><span class="sync" id="sync"></span></span>
+    <button id="next" aria-label="Semaine suivante">&gt;</button>
+  </div>
+  <div class="grid" id="g"></div>
+</div>
 <script>
+(function(){
+var Q = new URLSearchParams(location.search);
+var API = (Q.get("api") || "").replace(/\/$/, ""), KEY = Q.get("key") || "";
+try { if (window.self === window.top) document.documentElement.style.background = "#191919"; } catch(e) {}
+
+// ---------- taille : tout s'adapte au bloc Notion ----------
+function fit(){ var u = Math.min(innerWidth / 270, innerHeight / 330); document.documentElement.style.setProperty("--u", Math.max(.6, u) + "px"); }
+addEventListener("resize", fit); fit();
+
+// ---------- dessin des pilules ----------
 var DAYS=["LUN","MAR","MER","JEU","VEN","SAM","DIM"];
 var MAP=["..oooooooooo..",".oaaaaabbbbbo.","oahhaaabbiibbo","oaaaaaabbbbbbo","oaaaaaabbbbbbo",".oaaaaabbbbbo.","..oooooooooo.."];
 var ON={o:"#24202e",a:"#17151c",b:"#ff5b2e",h:"#4d4a5a",i:"#ffa07a"};
 var OFF={o:"#8e8a9c",a:"#ebe9f0",b:"#d6d3df",h:"#ffffff",i:"#ffffff"};
 var SWAP={a:"b",b:"a",h:"i",i:"h",o:"o"};
 function pill(on,flip){
- var p=on?ON:OFF,s='<svg viewBox="0 0 14 7" shape-rendering="crispEdges" aria-hidden="true">',y,x,c;
- for(y=0;y<7;y++)for(x=0;x<14;x++){c=MAP[y][x];if(c==="."||c===undefined)continue;if(flip)c=SWAP[c];s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+p[c]+'"/>'}
- return s+"</svg>";
+  var p=on?ON:OFF,s='<svg viewBox="0 0 14 7" shape-rendering="crispEdges" aria-hidden="true">',y,x,c;
+  for(y=0;y<7;y++)for(x=0;x<14;x++){c=MAP[y][x];if(c==="."||c===undefined)continue;if(flip)c=SWAP[c];s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+p[c]+'"/>'}
+  return s+"</svg>";
 }
-var mem={};
-function sget(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):mem[k]||null}catch(e){return mem[k]||null}}
-function sset(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+// ---------- données (toutes les semaines) + synchronisation ----------
+function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+var db = lsGet("pilulier:db");
+if (!db){ // reprise des anciennes coches enregistrées sur cet appareil
+  db = { weeks:{}, updated:0 };
+  try { for (var i=0;i<localStorage.length;i++){ var k = localStorage.key(i); if (k && k.indexOf("pilulier:w:")===0){ db.weeks[k.slice(11)] = JSON.parse(localStorage.getItem(k)); db.updated = 1; } } } catch(e) {}
+  lsSet("pilulier:db", db);
+}
+var pending = false, saveT = null;
+function setSync(s){ var e = document.getElementById("sync"); e.className = "sync " + s; e.title = s==="off" ? "Hors ligne : enregistré sur cet appareil" : s==="wait" ? "Enregistrement…" : API ? "Synchronisé" : "Enregistré sur cet appareil"; }
+function url(){ return API + "/sync?doc=pilulier&key=" + encodeURIComponent(KEY); }
+function save(){
+  db.updated = Date.now(); lsSet("pilulier:db", db);
+  if (!API) return;
+  pending = true; setSync("wait"); clearTimeout(saveT);
+  saveT = setTimeout(function(){
+    fetch(url(), { method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify(db) })
+      .then(function(r){ if (!r.ok) throw 0; pending = false; setSync("ok"); })
+      .catch(function(){ setSync("off"); setTimeout(function(){ if (pending) save(); }, 8000); });
+  }, 700);
+}
+function pull(){
+  if (!API || pending) return;
+  fetch(url(), { cache:"no-store" }).then(function(r){ if (!r.ok) throw r.status; return r.json(); }).then(function(j){
+    setSync("ok");
+    if ((j.updated||0) > db.updated && j.weeks){ db = { weeks:j.weeks, updated:j.updated }; lsSet("pilulier:db", db); render(); }
+    else if (!j.updated && db.updated) save();          // première fois : on envoie les coches déjà faites
+  }).catch(function(){ setSync("off"); });
+}
+
+// ---------- semaine affichée ----------
 function monday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
 function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 var start=monday(new Date()),popped=-1;
-function wk(){return "pilulier:w:"+key(start)}
-function toggle(i){var c=sget(wk())||{},k="0-"+i;if(c[k]){delete c[k];popped=-1}else{c[k]=1;popped=i}sset(wk(),c);render();popped=-1}
+function week(){ return db.weeks[key(start)] || {}; }
+function toggle(i){
+  var w = Object.assign({}, week()), k = "0-"+i;
+  if (w[k]){ delete w[k]; popped=-1; } else { w[k]=1; popped=i; }
+  db.weeks[key(start)] = w; save(); render(); popped=-1;
+}
 function render(){
- var c=sget(wk())||{},today=key(new Date()),h="",n=0,i;
- for(i=0;i<7;i++){
-  var d=new Date(start);d.setDate(d.getDate()+i);
-  var on=!!c["0-"+i];if(on)n++;
-  h+='<div class="cell'+(key(d)===today?" today":"")+'"><button class="slot'+(i===popped?" pop":"")+'" data-i="'+i+'" aria-pressed="'+on+'" aria-label="'+DAYS[i]+" "+d.getDate()+'">'+pill(on,i%3===1)+'</button><span class="lbl">'+DAYS[i]+"</span></div>";
- }
- h+='<div class="score'+(n===7?" full":"")+'">'+n+"/7</div>";
- document.getElementById("g").innerHTML=h;
- var end=new Date(start);end.setDate(end.getDate()+6);
- document.getElementById("range").textContent=start.getDate()+"-"+end.getDate()+" "+end.toLocaleDateString("fr-FR",{month:"short"}).replace(".","").toUpperCase();
+  var c=week(),today=key(new Date()),h="",n=0,i;
+  for(i=0;i<7;i++){
+    var d=new Date(start);d.setDate(d.getDate()+i);
+    var on=!!c["0-"+i];if(on)n++;
+    h+='<div class="cell'+(key(d)===today?" today":"")+'"><button class="slot'+(i===popped?" pop":"")+'" data-i="'+i+'" aria-pressed="'+on+'" aria-label="'+DAYS[i]+" "+d.getDate()+'">'+pill(on,i%3===1)+'</button><span class="lbl">'+DAYS[i]+"</span></div>";
+  }
+  h+='<div class="cell"><div class="score'+(n===7?" full":"")+'">'+n+"/7</div></div>";
+  document.getElementById("g").innerHTML=h;
+  var end=new Date(start);end.setDate(end.getDate()+6);
+  var m1=start.toLocaleDateString("fr-FR",{month:"short"}).replace(".","").toUpperCase(), m2=end.toLocaleDateString("fr-FR",{month:"short"}).replace(".","").toUpperCase();
+  document.getElementById("range").textContent = start.getDate()+(m1!==m2?" "+m1:"")+"-"+end.getDate()+" "+m2;
 }
 document.getElementById("g").addEventListener("click",function(e){var b=e.target.closest(".slot");if(b)toggle(+b.dataset.i)});
 document.getElementById("prev").onclick=function(){start.setDate(start.getDate()-7);render()};
 document.getElementById("next").onclick=function(){start.setDate(start.getDate()+7);render()};
-render();
+// à minuit ou au retour sur la page, on revient sur la bonne semaine et on resynchronise
+document.addEventListener("visibilitychange",function(){ if(!document.hidden){ pull(); render(); } });
+setSync(API ? "" : "local");
+render(); pull(); setInterval(pull, 20000);
+})();
 </script>
 </body>
 </html>
