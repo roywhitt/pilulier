@@ -11,48 +11,48 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:"Press Start 2P",ui-monospace,Menlo,monospace;overscroll-behavior:none}
 /* la plaquette occupe tout le bloc Notion, sans rien autour */
-.pack{position:absolute;left:0;right:0;top:0;bottom:calc(var(--u)*6);display:flex;flex-direction:column;
-  padding:calc(var(--u)*10) calc(var(--u)*13) calc(var(--u)*12);border:calc(var(--u)*3) solid #0a0a0a;border-radius:calc(var(--u)*14);
+.pack{position:absolute;left:1px;right:1px;top:0;display:flex;flex-direction:column;
+  padding:calc(var(--u)*18) calc(var(--u)*14) calc(var(--u)*10);border:calc(var(--u)*3) solid #0a0a0a;border-radius:calc(var(--u)*14);
   background-color:#dcd9e4;background-image:linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%),linear-gradient(45deg,#cdcad8 25%,transparent 25%,transparent 75%,#cdcad8 75%);
   background-size:calc(var(--u)*6) calc(var(--u)*6);background-position:0 0,calc(var(--u)*3) calc(var(--u)*3);box-shadow:0 calc(var(--u)*6) 0 #000}
 /* bandeau discret imprimé sur la plaquette : semaine + flèches */
-.bar{display:flex;align-items:center;justify-content:space-between;font-size:calc(var(--u)*6.5);color:#8e8a9c;margin-bottom:calc(var(--u)*9);letter-spacing:.04em;line-height:1}
-.bar button{background:none;border:0;padding:calc(var(--u)*3) calc(var(--u)*4);font:inherit;color:#a8a4b8;cursor:pointer;transition:color .2s}
+.bar{display:flex;align-items:center;justify-content:space-between;font-size:calc(var(--u)*6.5);color:#6f6a85;margin-top:calc(var(--u)*14);letter-spacing:.04em;line-height:1}
+.bar button{background:none;border:0;padding:calc(var(--u)*3) calc(var(--u)*4);font:inherit;color:#8e8a9c;cursor:pointer;transition:color .2s}
 .bar button:hover{color:#ff5b2e}
 .bar .mid{display:flex;align-items:center;gap:calc(var(--u)*6)}
-.sync{width:calc(var(--u)*4);height:calc(var(--u)*4);background:#a8a4b8;opacity:.6}
+.sync{display:none}
 .sync.wait{background:#ffd23f;animation:bl .6s steps(2) infinite;opacity:1}
 .sync.off{background:#e8441a;opacity:1}
 .sync.ok{background:#5bb37a;opacity:.8}
 @keyframes bl{50%{opacity:.2}}
-.grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);gap:calc(var(--u)*10) calc(var(--u)*10)}
-.cell{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*5);min-height:0}
-.slot{width:100%;flex:1;min-height:0;border:calc(var(--u)*3) solid #9b97ab;background:#c6c3d1;border-radius:calc(var(--u)*16);
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*16) calc(var(--u)*10)}
+.cell{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*6)}
+.slot{width:100%;height:calc(var(--u)*48);border:calc(var(--u)*3) solid #9b97ab;background:#c6c3d1;border-radius:calc(var(--u)*16);
   box-shadow:inset 0 calc(var(--u)*3) 0 #a8a4b8,0 calc(var(--u)*3) 0 #f2f0f7;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;position:relative;transition:transform .1s}
 .slot:hover{transform:translateY(calc(var(--u)*-1))}
 .slot:active{transform:translateY(calc(var(--u)*2))}
-.slot svg{width:calc(var(--u)*62);height:calc(var(--u)*31);max-height:80%;display:block}
+.slot svg{width:calc(var(--u)*62);height:calc(var(--u)*31);display:block}
 .slot.pop svg{animation:pop .45s steps(6)}
 .slot.pop::after{content:"";position:absolute;left:50%;top:50%;width:calc(var(--u)*4);height:calc(var(--u)*4);background:#ffd23f;
   box-shadow:calc(var(--u)*-34) calc(var(--u)*-14) 0 #ff5b2e,calc(var(--u)*34) calc(var(--u)*-14) 0 #ffd23f,calc(var(--u)*-38) calc(var(--u)*10) 0 #ffd23f,calc(var(--u)*38) calc(var(--u)*10) 0 #ff5b2e,0 calc(var(--u)*-24) 0 #5b3fd6,0 calc(var(--u)*24) 0 #5b3fd6;
   animation:burst .45s steps(4) forwards;pointer-events:none}
 @keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.4) rotate(-8deg)}60%{transform:scale(.88) rotate(4deg)}100%{transform:scale(1)}}
 @keyframes burst{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
-.lbl{font-size:calc(var(--u)*7);color:#4a4560;padding:calc(var(--u)*3) calc(var(--u)*4);line-height:1}
+.lbl{font-size:calc(var(--u)*8);color:#4a4560;padding:calc(var(--u)*3) calc(var(--u)*4);line-height:1}
 .cell.today .lbl{background:#2b2833;color:#fff}
-.score{flex:1;display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*13);color:#4a4560}
+.score{height:calc(var(--u)*48);display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*13);color:#4a4560}
 .score.full{color:#e8441a}
 @media (prefers-reduced-motion:reduce){.slot.pop svg,.slot.pop::after{animation:none}}
 </style>
 </head>
 <body>
 <div class="pack">
+  <div class="grid" id="g"></div>
   <div class="bar">
     <button id="prev" aria-label="Semaine précédente">&lt;</button>
     <span class="mid"><span id="range"></span><span class="sync" id="sync"></span></span>
     <button id="next" aria-label="Semaine suivante">&gt;</button>
   </div>
-  <div class="grid" id="g"></div>
 </div>
 <script>
 (function(){
@@ -61,7 +61,7 @@ var API = (Q.get("api") || "").replace(/\/$/, ""), KEY = Q.get("key") || "";
 try { if (window.self === window.top) document.documentElement.style.background = "#191919"; } catch(e) {}
 
 // ---------- taille : tout s'adapte au bloc Notion ----------
-function fit(){ var u = Math.min(innerWidth / 270, innerHeight / 330); document.documentElement.style.setProperty("--u", Math.max(.6, u) + "px"); }
+function fit(){ var u = (innerWidth - 2) / 270; document.documentElement.style.setProperty("--u", Math.max(.6, u) + "px"); }
 addEventListener("resize", fit); fit();
 
 // ---------- dessin des pilules ----------
